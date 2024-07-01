@@ -9,12 +9,20 @@ import {
   watch,
 } from "vue";
 import { RouterLink, RouterView } from "vue-router";
+import { useDisplay } from "vuetify";
 
 const drawer = ref(false);
 const group = ref(null);
 const windowWidth = ref(window.innerWidth);
+const permanent = computed(() => {
+  return display.lgAndUp.value;
+});
 const showOverlay = computed(() => drawer.value && !permanent.value);
+const display = useDisplay();
 
+const toggleDrawer = () => {
+  drawer.value = !drawer.value;
+};
 const closeDrawer = () => {
   drawer.value = false;
 };
@@ -25,9 +33,9 @@ const items = ref([
   { title: "Validation", value: "fizz", route: "/validation" },
   { title: "Admin", value: "buzz", route: "/admin" },
 ]);
-const permanent = computed(() => {
-  return windowWidth.value >= 1264; // Equivalent to Vuetify's 'lg' breakpoint
-});
+// const permanent = computed(() => {
+//   return windowWidth.value >= 1264; // Equivalent to Vuetify's 'lg' breakpoint
+// });
 
 const handleResize = () => {
   windowWidth.value = window.innerWidth;
@@ -60,11 +68,12 @@ watch(group, () => {
   drawer.value = false;
 });
 </script>
+
 <template>
   <v-app>
-    <!-- <v-app-bar color="primary" dark app elevation="4" :height="64">
+    <v-app-bar color="primary" dark app elevation="4" :height="64">
       <v-app-bar-nav-icon @click.stop="toggleDrawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Time Sheet</v-toolbar-title>
+      <v-toolbar-title>Effort Tracking System</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
@@ -75,48 +84,16 @@ watch(group, () => {
       <v-btn icon>
         <v-icon>mdi-dots-vertical</v-icon>
       </v-btn>
-    </v-app-bar> -->
-    <v-app-bar :elevation="2">
-      <template v-slot:prepend>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
-      </template>
-
-      <v-app-bar-title>Application Bar</v-app-bar-title>
     </v-app-bar>
-    <v-card>
-      <v-layout>
-        <v-navigation-drawer expand-on-hover rail>
-          <v-list>
-            <router-link
-              v-for="item in items"
-              :key="item.value"
-              :to="item.route"
-              custom
-              v-slot="{ navigate, isActive }"
-            >
-              <v-list-item :active="isActive" @click="navigate">
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item>
-            </router-link>
-          </v-list>
-          <template v-slot:append>
-            <div class="pa-2">
-              <v-btn block @click="drawer = !drawer"> Logout </v-btn>
-            </div>
-          </template>
-        </v-navigation-drawer>
 
-        <v-main style="height: 250px"></v-main>
-      </v-layout>
-    </v-card>
-    <!-- <v-navigation-drawer
+    <v-navigation-drawer
       v-model="drawer"
       app
-      :temporary="!permanent"
-      :permanent="permanent"
+      theme="dark"
       :clipped="false"
-      width="300"
+      width="200"
       :style="{ top: '64px' }"
+      temporary
     >
       <v-list>
         <router-link
@@ -133,25 +110,17 @@ watch(group, () => {
       </v-list>
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block @click="drawer = !drawer"> Logout </v-btn>
+          <v-btn block>Logout</v-btn>
         </div>
       </template>
-    </v-navigation-drawer> -->
-    <!-- <v-main>
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/user-data">User Data</RouterLink>
-      </nav>
-      <RouterView />
-    </v-main> -->
+    </v-navigation-drawer>
+
     <v-main>
       <router-view></router-view>
     </v-main>
-    <teleport to="body">
-      <div v-if="showOverlay" class="overlay" @click="closeDrawer"></div>
-    </teleport>
   </v-app>
 </template>
+
 <style scoped>
 nav {
   display: flex;
@@ -169,7 +138,7 @@ nav a:hover {
 }
 
 .v-main {
-  background-image: url("/path/to/your/background-image.jpg");
+  background-image: url("");
   background-size: cover;
   background-position: center;
 }
