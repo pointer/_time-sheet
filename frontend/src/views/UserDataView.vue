@@ -67,9 +67,9 @@ data: () => ({
   <div class="user-data">
     <!-- <h2>User Registration</h2> -->
     <!-- <form @submit.prevent="updateUser"> -->
-    <v-sheet class="d-flex" height="600" color="transparent">
-      <v-form v-model="valid">
-        <!-- <v-form ref="form"> -->
+    <v-sheet class="mx-auto" height="640" :elevation= 8 rounded outlined color=#262526>
+      <!-- <v-form v-model="valid"> -->
+      <v-form ref="form">
         <!-- <v-card
       class="mx-auto"
       max-width="344"
@@ -218,7 +218,7 @@ data: () => ({
       </v-card-actions>
     </v-card>     -->
       </v-form>
-      <sheet-footer> #1: (3r x 2c) </sheet-footer>
+      <!-- <sheet-footer> #1: (3r x 2c) </sheet-footer> -->
     </v-sheet>
   </div>
 </template>
@@ -235,4 +235,13 @@ data: () => ({
 .user-data h2 {
   margin-bottom: 1rem;
 }
+.v-container{
+  color: #ccc
+}
+
+
+.v-sheet {  
+     border-color: rgb(0, 0, 0) !important;
+}
+
 </style>

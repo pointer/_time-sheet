@@ -10,7 +10,7 @@ import {
 } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 import { useDisplay } from "vuetify";
-
+import vuetify from './plugins/vuetify'
 const drawer = ref(false);
 const group = ref(null);
 const windowWidth = ref(window.innerWidth);
@@ -71,10 +71,10 @@ watch(group, () => {
 
 <template>
   <v-app>
-    <v-app-bar color="primary" dark app elevation="4" :height="64">
+    <v-app-bar color="primary" app elevation="4" :height="64" density="compact">
       <v-app-bar-nav-icon @click.stop="toggleDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Effort Tracking System</v-toolbar-title>
-      <v-spacer></v-spacer>
+      <!-- <v-spacer></v-spacer> -->
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
@@ -141,6 +141,7 @@ nav a:hover {
   background-image: url("");
   background-size: cover;
   background-position: center;
+  background-color: #121212;
 }
 
 .overlay {

@@ -6,7 +6,9 @@
           <h1 class="error-title">FOG ERROR</h1>
           <h2 class="error-code">404</h2>
           <h3 class="error-message">Page not found</h3>
-          <p class="error-description">I tried to catch some fog, but I missed it</p>
+          <p class="error-description">
+            I tried to catch some fog, but I missed it
+          </p>
           <v-btn color="primary" to="/" rounded>
             <v-icon left>mdi-home</v-icon>
             Back to Home
@@ -27,7 +29,8 @@
 }
 
 .v-container {
-  background-color: #121212;
+  background-color: #121212 
+  /*#242424;*/
 }
 
 .error-container {
