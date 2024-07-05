@@ -2,8 +2,8 @@
   <v-container>
     <v-row class="text-center">
       <v-col cols="12">
-        <h1 class="text-h3 font-weight-bold mb-4">Welcome to TimeSheet App</h1>
-        <p class="text-subtitle-1">Manage your time efficiently with our easy-to-use platform</p>
+        <h1 class="text-h3 font-weight-bold mb-4">Bienvenue dans l'application de suivi des efforts</h1>
+        <p class="text-subtitle-1">Gérez votre effort efficacement grâce à notre plateforme facile à utiliser</p>
       </v-col>
     </v-row>
 
@@ -16,7 +16,7 @@
             <p>{{ feature.description }}</p>
           </v-card-text>
           <v-card-actions>
-            <v-btn :to="feature.link" color="primary" text>Learn More</v-btn>
+            <v-btn :to="feature.link" color="primary" text>Savoir plus</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -24,7 +24,7 @@
 
     <v-row class="mt-8">
       <v-col cols="12">
-        <v-btn color="primary" large :to="'/user-data'">Get Started</v-btn>
+        <v-btn color="primary" large :to="'/login'">Commencer</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -36,27 +36,26 @@ import { ref } from 'vue'
 const features = ref([
   {
     icon: 'mdi-clock-outline',
-    title: 'Time Tracking',
-    description: 'Easy and accurate time tracking for all your projects.',
+    title: 'Suivi des efforts',
+    description: 'Suivi du temps simple et précis pour tous vos projets.',
     link: '/time-sheet'
   },
   {
     icon: 'mdi-account-group',
-    title: 'User Management',
-    description: 'Efficiently manage users and their roles.',
+    title: 'Gestion des utilisateurs',
+    description: 'Gérez efficacement les utilisateurs et leurs rôles.',
     link: '/user-data'
   },
   {
     icon: 'mdi-chart-bar',
-    title: 'Reports',
-    description: 'Generate insightful reports for better decision making.',
+    title: 'Rapports',
+    description: 'Générez des rapports perspicaces pour une meilleure prise de décision.',
     link: '/admin'
   }
 ])
 </script>
 
 <style scoped>
-
 .read-the-docs {
   color: #888;
 }

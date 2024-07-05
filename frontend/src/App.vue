@@ -9,11 +9,13 @@ import {
   watch,
 } from "vue";
 import { RouterLink, RouterView } from "vue-router";
+import { useRouter } from 'vue-router';
 import { useDisplay } from "vuetify";
 import vuetify from './plugins/vuetify'
 const drawer = ref(false);
 const group = ref(null);
 const windowWidth = ref(window.innerWidth);
+const router = useRouter();
 const permanent = computed(() => {
   return display.lgAndUp.value;
 });
@@ -21,7 +23,9 @@ const showOverlay = computed(() => drawer.value && !permanent.value);
 const display = useDisplay();
 
 const toggleDrawer = () => {
-  drawer.value = !drawer.value;
+  const user = localStorage.getItem('user')
+  if (user.includes('admin'))
+    drawer.value = !drawer.value;
 };
 const closeDrawer = () => {
   drawer.value = false;
@@ -30,7 +34,7 @@ const items = ref([
   { title: "Home", value: "home", route: "/" },
   { title: "User Registrar", value: "user-data", route: "/user-data" },
   { title: "Time Sheet", value: "bar", route: "/time-sheet" },
-  { title: "Validation", value: "fizz", route: "/validation" },
+  { title: "Validation", value: "supervisor", route: "/supervisor" },
   { title: "Admin", value: "buzz", route: "/admin" },
 ]);
 // const permanent = computed(() => {
@@ -58,6 +62,19 @@ const handleOutsideClick = (event) => {
 onMounted(() => {
   window.addEventListener("resize", handleResize);
   document.addEventListener("click", handleOutsideClick);
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user) {
+    if (user.role === 'supervisor') {
+      router.push('/supervisor');
+    } else if (user.role === 'employee') {
+      router.push('/employee');
+    }
+    else if (user.role === 'admin') {
+      router.push('/');
+    }
+  } else {
+    router.push('/login');
+  }
 });
 
 onBeforeUnmount(() => {
@@ -86,23 +103,10 @@ watch(group, () => {
       </v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-      theme="dark"
-      :clipped="false"
-      width="200"
-      :style="{ top: '64px' }"
-      temporary
-    >
+    <v-navigation-drawer v-model="drawer" app theme="dark" :clipped="false" width="200" :style="{ top: '64px' }"
+      temporary>
       <v-list>
-        <router-link
-          v-for="item in items"
-          :key="item.value"
-          :to="item.route"
-          custom
-          v-slot="{ navigate, isActive }"
-        >
+        <router-link v-for="item in items" :key="item.value" :to="item.route" custom v-slot="{ navigate, isActive }">
           <v-list-item :active="isActive" @click="navigate">
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
