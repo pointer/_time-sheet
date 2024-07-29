@@ -1,4 +1,7 @@
 <script setup>
+// require("dotenv").config()Uncaught Error: Module "module" has been externalized for browser compatibility.;
+// import config from dotenv;
+// console.log(process.env); // remove this after you've confirmed it is working
 import {
   ref,
   onMounted,
@@ -9,9 +12,13 @@ import {
   watch,
 } from "vue";
 import { RouterLink, RouterView } from "vue-router";
-import { useRouter } from 'vue-router';
+import { Nav, Alert } from "@/components";
+import { useAuthStore } from "@/store";
+
+const authStore = useAuthStore();
+import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
-import vuetify from './plugins/vuetify'
+import vuetify from "./plugins/vuetify";
 const drawer = ref(false);
 const group = ref(null);
 const windowWidth = ref(window.innerWidth);
@@ -23,9 +30,8 @@ const showOverlay = computed(() => drawer.value && !permanent.value);
 const display = useDisplay();
 
 const toggleDrawer = () => {
-  const user = localStorage.getItem('user')
-  if (user.includes('admin'))
-    drawer.value = !drawer.value;
+  const user = localStorage.getItem("user");
+  if (user.includes("admin")) drawer.value = !drawer.value;
 };
 const closeDrawer = () => {
   drawer.value = false;
@@ -59,21 +65,45 @@ const handleOutsideClick = (event) => {
   }
 };
 
+function checkAuth(to, from, next) {
+  if (IsAuthenticated()) next();
+  else next("/login");
+}
+
+function guardMyroute(to, from, next) {
+  let isAuthenticated = false;
+  //this is just an example. You will have to find a better or
+  // centralised way to handle you localstorage data handling
+  if (localStorage.getItem("user"))
+    //('LoggedUser'))
+    isAuthenticated = true;
+  else isAuthenticated = false;
+  if (isAuthenticated) {
+    next(); // allow to enter route
+  } else {
+    next("/login"); // go to '/login';
+  }
+}
+
 onMounted(() => {
   window.addEventListener("resize", handleResize);
   document.addEventListener("click", handleOutsideClick);
-  const user = JSON.parse(localStorage.getItem('user'));
+  // window.process = {
+  //   env: {
+  //     NODE_ENV: "development",
+  //   },
+  // };
+  const user = JSON.parse(localStorage.getItem("user"));
   if (user) {
-    if (user.role === 'supervisor') {
-      router.push('/supervisor');
-    } else if (user.role === 'employee') {
-      router.push('/employee');
-    }
-    else if (user.role === 'admin') {
-      router.push('/');
+    if (user.role === "supervisor") {
+      router.push("/supervisor");
+    } else if (user.role === "employee") {
+      router.push("/employee");
+    } else if (user.role === "admin") {
+      router.push("/");
     }
   } else {
-    router.push('/login');
+    router.push("/account/login");
   }
 });
 
@@ -90,7 +120,7 @@ watch(group, () => {
   <v-app>
     <v-app-bar color="primary" app elevation="4" :height="64" density="compact">
       <v-app-bar-nav-icon @click.stop="toggleDrawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Effort Tracking System</v-toolbar-title>
+      <v-toolbar-title><h2>Effort Tracking System</h2></v-toolbar-title>
       <!-- <v-spacer></v-spacer> -->
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
@@ -103,10 +133,23 @@ watch(group, () => {
       </v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" app theme="dark" :clipped="false" width="200" :style="{ top: '64px' }"
-      temporary>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      theme="dark"
+      :clipped="false"
+      width="200"
+      :style="{ top: '64px' }"
+      temporary
+    >
       <v-list>
-        <router-link v-for="item in items" :key="item.value" :to="item.route" custom v-slot="{ navigate, isActive }">
+        <router-link
+          v-for="item in items"
+          :key="item.value"
+          :to="item.route"
+          custom
+          v-slot="{ navigate, isActive }"
+        >
           <v-list-item :active="isActive" @click="navigate">
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
@@ -119,8 +162,18 @@ watch(group, () => {
       </template>
     </v-navigation-drawer>
 
+    <!-- <template> -->
+    <div class="app-container" :class="authStore.user && 'bg-light'">
+      <Nav />
+      <Alert />
+      <div class="container pt-4 pb-4">
+        <router-view />
+      </div>
+    </div>
+    <!-- </template> -->
+
     <v-main>
-      <router-view></router-view>
+      <!-- <router-view></router-view> -->
     </v-main>
   </v-app>
 </template>
@@ -156,5 +209,15 @@ nav a:hover {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 5;
+}
+
+.app-container {
+  min-height: 350px;
+}
+
+.btn-delete-user {
+  width: 40px;
+  text-align: center;
+  box-sizing: content-box;
 }
 </style>

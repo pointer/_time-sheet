@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode development",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -13,12 +13,16 @@
     "@mdi/font": "^7.4.47",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
     "grpc-web": "^1.5.0",
     "moment-timezone": "^0.5.45",
     "nuxt": "^3.12.2",
+    "pinia": "^2.0.13",
+    "yup": "^0.32.11",    
     "vue": "^3.4.29",
     "vue-i18n": "^9.13.1",
     "vuetify": "^3.6.0-beta.0.0",
+    "vee-validate": "^4.5.11",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

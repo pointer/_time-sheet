@@ -1,10 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore, useAlertStore } from "@/store";
+import accountRoutes from "./account.routes";
+import usersRoutes from "./users.routes";
 import HomeView from "../components/HomePage.vue";
-import LoginView from "../components/LoginView.vue";
+import LoginView from "../views/account/LoginView.vue";
 import UserDataView from "../views/UserDataView.vue";
 import UserTimesheetView from "../views/UserTimesheetView.vue";
 import AdminUserView from "../views/AdminUsers.vue";
 import SupervisorView from "../views/SupervisorView.vue";
+import AppView from "../App.vue";
 
 const routes = [
   {
@@ -21,36 +25,66 @@ const routes = [
     path: "/user-data",
     name: "UserData",
     component: UserDataView,
+    meta: { role: 0 },
   },
   {
     path: "/time-sheet",
     name: "TimeSheet",
     component: UserTimesheetView,
+    // beforeEnter: AppView.guardMyroute,
+    meta: { role: "Employee", title: "Time Sheet" },
   },
   {
     path: "/supervisor",
     name: "Supervisor",
     component: SupervisorView,
-  },  
+    // beforeEnter: AppView.guardMyroute,
+    meta: { role: 1, title: "Approbation" },
+  },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () => import("../components/NotFound.vue"),
   },
+  { ...accountRoutes },
+  { ...usersRoutes },
+  // catch all redirect to home page
+  { path: "/:pathMatch(.*)*", redirect: "/" },
   // Add other routes as needed
 ];
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (to.meta.role && (!user || user.role !== to.meta.role)) {
-    next('/login');
-  } else {
-    next();
+// router.beforeEach((to, from, next) => {
+//   const user = JSON.parse(localStorage.getItem("user"));
+//   if (to.meta.role && (!user || user.role !== to.meta.role)) {
+//     next("/login");
+//   } else {
+//     next();
+//   }
+// });
+
+// router.beforeEach((to, from, next) => {
+//   if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
+//   else next()
+// })
+
+router.beforeEach(async (to) => {
+  // clear alert on route change
+  const alertStore = useAlertStore();
+  alertStore.clear();
+
+  // redirect to login page if not logged in and trying to access a restricted page
+  const publicPages = ["/account/login", "/account/register"];
+  const authRequired = !publicPages.includes(to.path);
+  const authStore = useAuthStore();
+
+  if (authRequired && !authStore.user) {
+    authStore.returnUrl = to.fullPath;
+    return "/account/login";
   }
 });
 

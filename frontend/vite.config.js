@@ -1,12 +1,8 @@
-// import { defineConfig } from 'vite'
-// import vue from '@vitejs/plugin-vue'
+// https://vitejs.dev/config/
 
-// // https://vitejs.dev/config/
-// export default defineConfig({
-//   plugins: [vue()],
-// })
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+const fs = require('fs')
 
 export default defineConfig({
   plugins: [vue()],
@@ -15,4 +11,11 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  devServer: {
+      https: {
+        key: fs.readFileSync('./certs/example.com+5-key.pem'),
+        cert: fs.readFileSync('./certs/example.com+5.pem'),
+      },
+      public: 'https://localhost:8765/'
+  }  
 })

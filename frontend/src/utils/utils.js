@@ -182,3 +182,17 @@ export const getCoordinates = () => {
   //   )
   // })
 };
+
+export function isWeekend(date) {
+  const day = new Date(date).getDay();
+  return day === 0 || day === 6; // Sunday or Saturday
+}
+
+export function isHoliday(date) {
+  const holidays = [
+    '2023-12-25', // Christmas
+    '2023-01-01', // New Year's Day
+    // Add more holidays here
+  ];
+  return holidays.includes(date.toISOString().substring(0, 10));
+}
