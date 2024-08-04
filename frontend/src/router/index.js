@@ -7,6 +7,8 @@ import LoginView from "../views/account/LoginView.vue";
 import UserDataView from "../views/UserDataView.vue";
 import UserTimesheetView from "../views/UserTimesheetView.vue";
 import AdminUserView from "../views/AdminUsers.vue";
+import AdminAgents from "../views/AdminAgents.vue";
+
 import SupervisorView from "../views/SupervisorView.vue";
 import AppView from "../App.vue";
 
@@ -40,6 +42,11 @@ const routes = [
     component: SupervisorView,
     // beforeEnter: AppView.guardMyroute,
     meta: { role: 1, title: "Approbation" },
+  },
+    {
+    path: '/admin/agents',
+    name: 'AdminAgents',
+    component: AdminAgents
   },
   {
     path: "/:pathMatch(.*)*",
@@ -78,8 +85,9 @@ router.beforeEach(async (to) => {
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ["/account/login", "/account/register"];
+  const publicPages = ["/account/login",  "/account/register", "/user-data"];
   const authRequired = !publicPages.includes(to.path);
+  console.log(authRequired)
   const authStore = useAuthStore();
 
   if (authRequired && !authStore.user) {

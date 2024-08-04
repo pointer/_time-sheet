@@ -1,72 +1,85 @@
 <template>
-  <div class="user-data">
-    <h2>User Data</h2>
-    <v-form @submit.prevent="updateUser">
-      <v-container>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.firstName" color="primary" :rules="[(v) => !!v || 'Item is required']"
-              hide-details="auto" label="First name" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.lastName" color="primary" :rules="[(v) => !!v || 'Item is required']"
-              hide-details="auto" label="Last name" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.email" color="primary" :rules="[(v) => !!v || 'Item is required']"
-              hide-details="auto" label="Email" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.phone" color="primary" :rules="[(v) => !!v || 'Item is required']"
-              hide-details="auto" label="Tel." variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-select :items="['Contract', 'Supervisor', 'Employee']" v-model="user.role" :rules="rules"
-              hide-details="auto" color="primary" label="Role" variant="underlined"></v-select>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.contractNumber" color="primary" :rules="rules" hide-details="auto"
-              label="Contract number" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.company" color="primary" label="Company" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.taxNumber" color="primary" label="Tax number"
-              variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.client" color="primary" label="Client" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-select v-model="user.project" :items="projects" item-text="project_name" item-value="project_id"
-              label="Project" required></v-select>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.city" color="primary" label="City" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.dateStart" color="primary" label="Start Date"
-              variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.dateEnd" color="primary" label="End Date" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="user.rate" color="primary" label="Rate" variant="underlined"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="12">
-            <v-btn color="primary" type="submit">Update</v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-form>
+  <div class="pa-4 text-center">
+    <v-btn color="primary" @click="dialog = true">Open User Profile</v-btn>
+    <v-dialog v-model="dialog" max-width="600">
+      <v-card prepend-icon="mdi-account" title="User Profile">
+        <v-card-text>
+          <v-row dense>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.firstName" color="primary" :rules="[(v) => !!v || 'Item is required']"
+                hide-details="auto" label="First name" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.lastName" color="primary" :rules="[(v) => !!v || 'Item is required']"
+                hide-details="auto" label="Last name" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.email" color="primary" :rules="[(v) => !!v || 'Item is required']"
+                hide-details="auto" label="Email" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.phone" color="primary" :rules="[(v) => !!v || 'Item is required']"
+                hide-details="auto" label="Tel." variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-select :items="['Contract', 'Supervisor', 'Employee']" v-model="user.role" :rules="rules"
+                hide-details="auto" color="primary" label="Role" variant="underlined"></v-select>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.contractNumber" color="primary" :rules="rules" hide-details="auto"
+                label="Contract number" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.company" color="primary" label="Company" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.taxNumber" color="primary" label="Tax number"
+                variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.client" color="primary" label="Client" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-select v-model="user.project" :items="projects" item-text="project_name" item-value="project_id"
+                label="Project" required></v-select>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.city" color="primary" label="City" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.dateStart" color="primary" label="Start Date"
+                variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.dateEnd" color="primary" label="End Date" variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="user.rate" color="primary" label="Rate" variant="underlined"></v-text-field>
+            </v-col>
+            <!-- <v-col cols="12" md="12">
+              <v-btn color="primary" type="submit">Update</v-btn>
+            </v-col> -->
+          </v-row>
+          <small class="text-caption text-medium-emphasis">*indicates required field</small>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn text="Close" variant="plain" @click="dialog = false"></v-btn>
+
+          <v-btn color="primary" type="submit" text="Save" variant="tonal" @click="updateUser"></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-
+const dialog = ref(false);
 const user = ref({
   firstName: "",
   lastName: "",
@@ -92,9 +105,10 @@ const rules = [
 ];
 
 const updateUser = async () => {
-  const userData = { ...user.value, user_id: JSON.parse(localStorage.getItem('user')).id };
+  const userData = { ...user.value };
   const response = await updateUserData(userData);
   if (response.success) {
+    dialog = false
     alert("User data updated successfully");
   } else {
     alert("Failed to update user data");
@@ -102,23 +116,25 @@ const updateUser = async () => {
 };
 
 async function updateUserData(user_data) {
-  return new Promise((resolve, reject) => {
-    const ws = new WebSocket("ws://localhost:8765");
-
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ action: "update_user_data", user_data }));
+  try {
+    const payload = {
+      email: username.value,
+      password: password.value
     };
-
-    ws.onmessage = (event) => {
-      const response = JSON.parse(event.data);
-      resolve(response);
-      ws.close();
-    };
-
-    ws.onerror = (error) => {
-      reject(error);
-    };
-  });
+    const response = await authStore.userRegister(user_data);
+    if (response.status === 200) {
+      alert("Registration successful. Please log in.");
+    } else {
+      alert("Registration failed: " + response.data.detail);
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    if (error.response && error.response.data) {
+      alert("Registration failed: " + error.response.data.detail);
+    } else {
+      alert("Registration failed: An unexpected error occurred");
+    }
+  }
 }
 
 async function fetchProjects() {
@@ -145,7 +161,7 @@ async function fetchProjects() {
 }
 
 onMounted(async () => {
-  await fetchProjects(); // Fetch projects when the component is mounted
+  // await fetchProjects(); // Fetch projects when the component is mounted
 });
 </script>
 

@@ -12,10 +12,11 @@ import {
   watch,
 } from "vue";
 import { RouterLink, RouterView } from "vue-router";
-import { Nav, Alert } from "@/components";
+// import { Nav, Alert } from "@/components";
 import { useAuthStore } from "@/store";
 
 const authStore = useAuthStore();
+
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 import vuetify from "./plugins/vuetify";
@@ -103,7 +104,7 @@ onMounted(() => {
       router.push("/");
     }
   } else {
-    router.push("/account/login");
+    router.push("/account/userLogin");
   }
 });
 
@@ -120,7 +121,9 @@ watch(group, () => {
   <v-app>
     <v-app-bar color="primary" app elevation="4" :height="64" density="compact">
       <v-app-bar-nav-icon @click.stop="toggleDrawer"></v-app-bar-nav-icon>
-      <v-toolbar-title><h2>Effort Tracking System</h2></v-toolbar-title>
+      <v-toolbar-title>
+        <h2>Effort Tracking System</h2>
+      </v-toolbar-title>
       <!-- <v-spacer></v-spacer> -->
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
@@ -133,23 +136,10 @@ watch(group, () => {
       </v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-      theme="dark"
-      :clipped="false"
-      width="200"
-      :style="{ top: '64px' }"
-      temporary
-    >
+    <v-navigation-drawer v-model="drawer" app theme="dark" :clipped="false" width="200" :style="{ top: '64px' }"
+      temporary>
       <v-list>
-        <router-link
-          v-for="item in items"
-          :key="item.value"
-          :to="item.route"
-          custom
-          v-slot="{ navigate, isActive }"
-        >
+        <router-link v-for="item in items" :key="item.value" :to="item.route" custom v-slot="{ navigate, isActive }">
           <v-list-item :active="isActive" @click="navigate">
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
@@ -164,8 +154,8 @@ watch(group, () => {
 
     <!-- <template> -->
     <div class="app-container" :class="authStore.user && 'bg-light'">
-      <Nav />
-      <Alert />
+      <!-- <Nav />
+      <Alert /> -->
       <div class="container pt-4 pb-4">
         <router-view />
       </div>

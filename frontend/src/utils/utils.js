@@ -71,24 +71,26 @@ export const buildPayloadPagination = (pagination, search) => {
 };
 
 // Catches error connection or any other error (checks if error.response exists)
-export const handleError = (error, commit, reject) => {
+import * as types from '@/store/mutation-types';
+
+export const handleError = (error, store, reject) => {
   let errMsg = "";
-  // Resets errors in store
-  commit(types.SHOW_LOADING, false);
-  commit(types.ERROR, null);
-  // console.log(error)
-  // Checks if unauthorized
-  if (error.response.status === 401) {
-    store.dispatch("userLogout");
+  if (store.$state.showLoading !== undefined) {
+    store.$patch({ showLoading: false });
+  }
+  if (store.$state.error !== undefined) {
+    store.$patch({ error: null });
+  }
+  if (error.response && error.response.status === 401) {
+    store.userLogout();
   } else {
-    // Any other error
     errMsg = error.response
       ? error.response.data.errors.msg
       : "SERVER_TIMEOUT_CONNECTION_ERROR";
     setTimeout(() => {
-      return errMsg
-        ? commit(types.ERROR, errMsg)
-        : commit(types.SHOW_ERROR, false);
+      if (store.$state.error !== undefined) {
+        store.$patch({ error: errMsg || false });
+      }
     }, 0);
   }
   reject(error);
@@ -96,16 +98,24 @@ export const handleError = (error, commit, reject) => {
 
 export const buildSuccess = (
   msg,
-  commit,
+  store,
   resolve,
   resolveParam = undefined
 ) => {
-  commit(types.SHOW_LOADING, false);
-  commit(types.SUCCESS, null);
+  if (store.$state.showLoading !== undefined) {
+    store.$patch({ showLoading: false });
+  }
+  if (store.$state.success !== undefined) {
+    store.$patch({ success: null });
+  }
   setTimeout(() => {
-    return msg ? commit(types.SUCCESS, msg) : commit(types.SHOW_SUCCESS, false);
+    if (store.$state.success !== undefined) {
+      store.$patch({ success: msg || false });
+    }
   }, 0);
-  commit(types.ERROR, null);
+  if (store.$state.error !== undefined) {
+    store.$patch({ error: null });
+  }
   resolve(resolveParam);
 };
 

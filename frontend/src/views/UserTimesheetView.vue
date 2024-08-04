@@ -48,7 +48,7 @@ import { ref, computed, onMounted } from "vue";
 import { useTheme } from "vuetify";
 import { isWeekend, isHoliday } from "@/utils/utils"; // Assume you have a utility to check holidays
 // import LogoutButton from "@/components/LogoutButton.vue";
-
+import LogoutButton from '@/components/Logout.vue';
 const theme = useTheme();
 const newEntry = ref({
   dates: [],
@@ -173,29 +173,29 @@ async function submitTimesheet(user_id, date, worked, month) {
 }
 
 async function fetchProjects() {
-  return new Promise((resolve, reject) => {
-    const ws = new WebSocket("ws://localhost:8765");
+  // return new Promise((resolve, reject) => {
+  //   const ws = new WebSocket("ws://localhost:8765");
 
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ action: "get_projects" }));
-    };
+  //   ws.onopen = () => {
+  //     ws.send(JSON.stringify({ action: "get_projects" }));
+  //   };
 
-    ws.onmessage = (event) => {
-      const response = JSON.parse(event.data);
-      if (response.success) {
-        projects.value = response.projects;
-      }
-      resolve(response);
-      ws.close();
-    };
+  //   ws.onmessage = (event) => {
+  //     const response = JSON.parse(event.data);
+  //     if (response.success) {
+  //       projects.value = response.projects;
+  //     }
+  //     resolve(response);
+  //     ws.close();
+  //   };
 
-    ws.onerror = (error) => {
-      reject(error);
-    };
-  });
+  //   ws.onerror = (error) => {
+  //     reject(error);
+  //   };
+  // });
 }
 
 onMounted(async () => {
-  await fetchProjects();
+  // await fetchProjects();
 });
 </script>

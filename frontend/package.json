@@ -18,12 +18,15 @@
     "moment-timezone": "^0.5.45",
     "nuxt": "^3.12.2",
     "pinia": "^2.0.13",
-    "yup": "^0.32.11",    
+    "process": "^0.11.10",
+    "vee-validate": "^4.5.11",
     "vue": "^3.4.29",
+    "vue-axios": "^3.5.2",
     "vue-i18n": "^9.13.1",
     "vuetify": "^3.6.0-beta.0.0",
-    "vee-validate": "^4.5.11",
-    "vuex": "^4.1.0"
+    "vuex": "^4.1.0",
+    "webpack": "^5.93.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

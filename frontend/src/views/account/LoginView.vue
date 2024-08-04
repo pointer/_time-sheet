@@ -1,28 +1,13 @@
 <template>
   <v-sheet class="bg-deep-purple pa-12" rounded>
     <v-card class="mx-auto px-6 py-8" max-width="344">
-      <v-form
-        v-model="form"
-        @submit.prevent="onSubmit"
-        :validation-schema="schema"
-      >
-        <v-text-field
-          v-model="username"
-          :readonly="loading"
-          class="mb-2"
-          label="Username"
-          clearable
-          placeholder="Enter your username"
-        ></v-text-field>
+      <v-form v-model="form" :validation-schema="schema">
+        <!-- <v-form v-model="form" @submit.prevent="onSubmit" :validation-schema="schema"> -->
+        <v-text-field v-model="username" :readonly="loading" class="mb-2" label="username" clearable
+          placeholder="Enter your username"></v-text-field>
         <ErrorMessage name="username" />
-        <v-text-field
-          v-model="password"
-          :readonly="loading"
-          type="password"
-          label="Password"
-          placeholder="Enter your password"
-          clearable
-        ></v-text-field>
+        <v-text-field v-model="password" :readonly="loading" type="password" label="Password"
+          placeholder="Enter your password" clearable></v-text-field>
         <ErrorMessage name="password" />
         <!-- <v-otp-input
           :error-messages="codeErrorMsg"
@@ -35,28 +20,14 @@
         <v-spacer></v-spacer>
         <v-row>
           <v-col>
-            <v-btn
-              :disabled="!form"
-              :loading="loading"
-              color="success"
-              size="large"
-              type="submit"
-              variant="elevated"
-              block
-            >
+            <v-btn :disabled="!form" :loading="loading" color="success" size="large" @click="onSignIn"
+              variant="elevated" block>
               Sign In
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn
-              :disabled="!form"
-              :loading="loading"
-              color="success"
-              size="large"
-              type="submit"
-              variant="elevated"
-              block
-            >
+            <v-btn :disabled="!form" :loading="loading" color="success" size="large" @click="onSignUp"
+              variant="elevated" block>
               Sign Up
             </v-btn>
           </v-col>
@@ -70,16 +41,17 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { NavigationFailureType, isNavigationFailure } from "vue-router";
+import AdminAgents from '@/views/AdminAgents.vue';
 // import CryptoJS from 'crypto-js';
 // import sha256 from 'crypto-js/sha256';
 import { Form, Field } from "vee-validate";
 import { useField, useForm, ErrorMessage } from "vee-validate";
 import * as Yup from "yup";
-
+// import * as adminUser from "@/AdminUsers"
 import { useAuthStore } from "@/store";
 
 const schema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
+  username: Yup.string().required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
 
@@ -87,13 +59,65 @@ const { handleSubmit, handleReset } = useForm({
   schema,
 });
 
-async function onSubmit(values) {
+async function onSignIn() {
   const authStore = useAuthStore();
   // const { username, password } = values;
-  const username = useField("username", schema);
-  const password = useField("password", schema);
-  await authStore.login(username, password);
+  // const username = useField("username", schema);
+  // const password = useField("password", schema);
+  // username.value, password.va
+  const payload = new URLSearchParams();
+  payload.append('username', username.value);  // or 'email', depending on what your backend expects
+  payload.append('password', password.value);
+  await authStore.userLogin(payload);
+  // await authStore.userLogin(email.value, password.value);
 }
+
+async function onSignUp() {
+  const authStore = useAuthStore();
+  try {
+    // const payload = {
+    //   email: username.value,
+    //   password: password.value
+    // };
+    // const response = await authStore.userRegister(payload);
+    router.push({ name: 'UserData' });
+    // if (response.status === 200) {
+    //   alert("Registration successful. Please log in.");
+    // } else {
+    //   alert("Registration failed: " + response.data.detail);
+    // }
+  } catch (error) {
+    console.error('Registration error:', error);
+    // if (error.response && error.response.data) {
+    //   alert("Registration failed: " + error.response.data.detail);
+    // } else {
+    //   alert("Registration failed: An unexpected error occurred");
+    // }
+  }
+}
+
+// async function onSignUp() {
+//   const authStore = useAuthStore();
+//   try {
+//     const payload = {
+//       email: username.value,
+//       password: password.value
+//     };
+//     const response = await authStore.userRegister(payload);
+//     if (response.status === 200) {
+//       alert("Registration successful. Please log in.");
+//     } else {
+//       alert("Registration failed: " + response.data.detail);
+//     }
+//   } catch (error) {
+//     console.error('Registration error:', error);
+//     if (error.response && error.response.data) {
+//       alert("Registration failed: " + error.response.data.detail);
+//     } else {
+//       alert("Registration failed: An unexpected error occurred");
+//     }
+//   }
+
 
 // const username = useField('username', validationSchema);
 // const password = useField('password', validationSchema);
@@ -105,6 +129,7 @@ async function onSubmit(values) {
 const form = ref(false);
 const loading = ref(false);
 const username = ref("");
+const email = ref("");
 const password = ref("");
 const router = useRouter();
 const passwordRules = [

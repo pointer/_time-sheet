@@ -5,13 +5,19 @@
 </template>
 
 <script>
-// import { logout } from '@/services/auth';
-
-// export default {
-//     methods: {
-//         handleLogout() {
-//             logout();
-//         }
-//     }
-// };
+// import { userLogout } from '@/services/api/auth';
+import router from '@/router'
+export default {
+    methods: {
+        handleLogout() {
+            localStorage.removeItem('token')
+            localStorage.removeItem('tokenExpiration')
+            localStorage.removeItem('user')
+            // commit(types.LOGOUT)
+            router.push({
+                name: 'login'
+            })
+        }
+    }
+};
 </script>

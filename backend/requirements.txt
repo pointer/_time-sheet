@@ -1,0 +1,6 @@
+fastapi
+# fastapi-users[beanie]
+uvicorn[standard]
+fastapi
+fastapi-users[sqlalchemy]
+aiosqlite
