@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_users.router import ErrorCode
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_users import FastAPIUsers, schemas, BaseUserManager, IntegerIDMixin
+from fastapi_users import FastAPIUsers, password, schemas, BaseUserManager, IntegerIDMixin
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 # from fastapi_users.db import SQLAlchemyUserDatabase
 
@@ -49,6 +49,10 @@ class LoginResponse(BaseModel):
     role: bool
 
 
+class RegisterResponse(BaseModel):
+    pass
+
+
 @app.middleware("http")
 async def log_request(request: Request, call_next):
     # Log the request details
@@ -78,6 +82,20 @@ async def register(
             is_active=created_user.is_active,
             is_superuser=created_user.is_superuser,
             is_verified=created_user.is_verified,
+            password=created_user.password,
+            passconfirm=created_user.passconfirm,
+            phone=created_user.phone,
+            role=created_user.role,
+            contractNumber=created_user.contractNumber,
+            company=created_user.company,
+            taxNumber=created_user.taxNumber,
+            client=created_user.client,
+            project=created_user.project,
+            city=created_user.city,
+            zip=created_user.zip,
+            dateStart=created_user.dateStart,
+            dateEnd=created_user.dateEnd,
+            rate=created_user.rate,
         )
     except UserAlreadyExists:
         logger.error(f"Registration failed: User with email {

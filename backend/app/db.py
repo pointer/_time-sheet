@@ -4,8 +4,7 @@ from fastapi import Depends
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column, Integer, String, Boolean
-
+from sqlalchemy import Column, Integer, String, Boolean, Date, Numeric
 
 DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
@@ -24,7 +23,20 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_active = Column(Boolean, default=True, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
-    # role = Column(Integer, primary_key=False)
+    password = Column(String, nullable=True)
+    passconfirm = Column(String, nullable=True)
+    phone = Column(String, nullable=True)
+    role = Column(String, nullable=True)
+    contractNumber = Column(String, nullable=True)
+    company = Column(String, nullable=True)
+    taxNumber = Column(String, nullable=True)
+    client = Column(String, nullable=True)
+    project = Column(String, nullable=True)
+    city = Column(String, nullable=True)
+    zip = Column(String, nullable=True)
+    dateStart = Column(Date, nullable=True)
+    dateEnd = Column(Date, nullable=True)
+    rate = Column(Numeric, nullable=True)
 
 
 engine = create_async_engine(DATABASE_URL)

@@ -3,6 +3,9 @@
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue'
 import process from 'process';
+import { resolve } from 'path';
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+
 global.window = global.window || {};
 
 window.process = process;
@@ -15,14 +18,19 @@ export default ({ mode }) => {
   // }
   return  defineConfig({
     plugins: [
-      vue(),
+      vue({ 
+        template: { transformAssetUrls }
+      }),
+      vuetify({
+        autoImport: { labs: true }
+      }),
     //   new webpack.DefinePlugin({
     // 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     //   }),
     ],
     resolve: {
       alias: {
-        '@': '/src',
+        "@": resolve(__dirname, "./src"),
       },
     },
     server: {

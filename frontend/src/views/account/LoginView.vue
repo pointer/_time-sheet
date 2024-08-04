@@ -1,40 +1,43 @@
 <template>
-  <v-sheet class="bg-deep-purple pa-12" rounded>
-    <v-card class="mx-auto px-6 py-8" max-width="344">
-      <v-form v-model="form" :validation-schema="schema">
-        <!-- <v-form v-model="form" @submit.prevent="onSubmit" :validation-schema="schema"> -->
-        <v-text-field v-model="username" :readonly="loading" class="mb-2" label="username" clearable
-          placeholder="Enter your username"></v-text-field>
-        <ErrorMessage name="username" />
-        <v-text-field v-model="password" :readonly="loading" type="password" label="Password"
-          placeholder="Enter your password" clearable></v-text-field>
-        <ErrorMessage name="password" />
-        <!-- <v-otp-input
-          :error-messages="codeErrorMsg"
-          v-model="password"
-          type="password"
-          length="5"
-          dark
-        ></v-otp-input> -->
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-row>
-          <v-col>
-            <v-btn :disabled="!form" :loading="loading" color="success" size="large" @click="onSignIn"
-              variant="elevated" block>
-              Sign In
-            </v-btn>
-          </v-col>
-          <v-col>
-            <v-btn :disabled="!form" :loading="loading" color="success" size="large" @click="onSignUp"
-              variant="elevated" block>
-              Sign Up
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
+  <div>
+    <!-- <v-img class="mx-auto my-6" max-width="228"
+      src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"></v-img> -->
+
+    <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
+      <div class="text-subtitle-1 text-medium-emphasis">Account</div>
+
+      <v-text-field density="compact" placeholder="Email address" prepend-inner-icon="mdi-email-outline"
+        variant="outlined"></v-text-field>
+
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Password
+
+        <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">
+          Forgot login password?</a>
+      </div>
+
+      <v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
+        density="compact" placeholder="Enter your password" prepend-inner-icon="mdi-lock-outline" variant="outlined"
+        @click:append-inner="visible = !visible"></v-text-field>
+
+      <v-card class="mb-12" color="surface-variant" variant="tonal">
+        <v-card-text class="text-medium-emphasis text-caption">
+          Warning: After 3 consecutive failed login attempts, you account will be temporarily locked for three hours. If
+          you must login now, you can also click "Forgot login password?" below to reset the login password.
+        </v-card-text>
+      </v-card>
+
+      <v-btn class="mb-8" color="blue" size="large" variant="tonal" @click="onSignIn" block>
+        Log In
+      </v-btn>
+
+      <v-card-text class="text-center" @click.native='onSignUp'>
+        <a class="text-blue text-decoration-none" rel="noopener noreferrer" target="_blank">
+          Sign up now <v-icon icon="mdi-chevron-right"></v-icon>
+        </a>
+      </v-card-text>
     </v-card>
-  </v-sheet>
+  </div>
 </template>
 
 <script setup>
@@ -44,20 +47,20 @@ import { NavigationFailureType, isNavigationFailure } from "vue-router";
 import AdminAgents from '@/views/AdminAgents.vue';
 // import CryptoJS from 'crypto-js';
 // import sha256 from 'crypto-js/sha256';
-import { Form, Field } from "vee-validate";
+// import { Form, Field } from "vee-validate";
 import { useField, useForm, ErrorMessage } from "vee-validate";
-import * as Yup from "yup";
+// import * as Yup from "yup";
 // import * as adminUser from "@/AdminUsers"
 import { useAuthStore } from "@/store";
+const visible = ref(false);
+// const schema = Yup.object().shape({
+//   username: Yup.string().required("Email is required"),
+//   password: Yup.string().required("Password is required"),
+// });
 
-const schema = Yup.object().shape({
-  username: Yup.string().required("Email is required"),
-  password: Yup.string().required("Password is required"),
-});
-
-const { handleSubmit, handleReset } = useForm({
-  schema,
-});
+// const { handleSubmit, handleReset } = useForm({
+//   schema,
+// });
 
 async function onSignIn() {
   const authStore = useAuthStore();
