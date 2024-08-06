@@ -59,7 +59,7 @@ export const useAuthStore = defineStore({
               localStorage.setItem('user_id', JSON.stringify(response.data.id));              
               localStorage.setItem('token', JSON.stringify(response.data.access_token));
               localStorage.setItem('token_type', JSON.stringify(response.data.token_type));
-              localStorage.setItem('role', JSON.stringify(response.data.is_superuser));
+              localStorage.setItem('role', JSON.stringify(response.data.role));
               localStorage.setItem('working_days', JSON.stringify(response.data.working_days));
               localStorage.setItem(
                 'tokenExpiration',
@@ -76,17 +76,17 @@ export const useAuthStore = defineStore({
               this.working_days = response.data.working_days;
               this.user_id = response.data.id;
               this.token_type = response.data.token_type;
-              this.role = response.data.is_superuser;
+              this.role = response.data.role;
+              if (response.data.role === true) {
+                router.push({ name: 'Supervisor' })
+              } else {
+                router.push({ name: 'TimeSheet' })
+              }
               buildSuccess(
                 null,
                 this,
                 resolve,
-                router.push({ name: 'TimeSheet' })
-                  .catch(error => {
-                    console.error('Navigation failed:', error);
-                    // Optionally, you can redirect to a default route or show an error message
-                  })
-              );
+              );              
             }
             else {
               const errorData = response.json();

@@ -94,13 +94,13 @@ onMounted(() => {
   //     NODE_ENV: "development",
   //   },
   // };
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user) {
-    if (user.role === "supervisor") {
+  const role = JSON.parse(localStorage.getItem("role"));
+  if (role) {
+    if (role === "true") {
       router.push("/supervisor");
-    } else if (user.role === "employee") {
+    } else if (role === "false") {
       router.push("/employee");
-    } else if (user.role === "admin") {
+    } else {
       router.push("/");
     }
   } else {

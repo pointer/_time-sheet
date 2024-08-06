@@ -22,6 +22,7 @@ from app.users import auth_backend, current_active_user, fastapi_users
 import logging
 from app.users import UserManager, get_user_manager
 from app.timesheets import router as timesheet_router
+from app.approbation import router as approbation_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -205,6 +206,13 @@ app.include_router(
     prefix="/api",
     tags=["timesheets"],
     dependencies=[Depends(fastapi_users.current_user())]
+)
+
+app.include_router(
+    approbation_router,
+    prefix="/api",
+    tags=["approbations"]
+    # dependencies=[Depends(fastapi_users.current_user())]
 )
 
 

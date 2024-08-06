@@ -55,6 +55,7 @@ class TimeSheet(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow,
                         onupdate=datetime.utcnow)
+    status = Column(String, default='pending')
 
     user = relationship("User", back_populates="timesheets")
 
@@ -63,6 +64,25 @@ User.timesheets = relationship("TimeSheet", back_populates="user")
 
 engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+
+
+class Approbation(Base):
+    __tablename__ = "approbation"
+
+    id = Column(Integer, primary_key=True, index=True)
+    timesheet_id = Column(Integer, ForeignKey("timesheet.id"))
+    supervisor_id = Column(Integer, ForeignKey("user_account.id"))
+    approved = Column(Boolean, nullable=False)
+    approval_date = Column(DateTime, default=datetime.utcnow)
+
+    timesheet = relationship("TimeSheet", back_populates="approbations")
+    supervisor = relationship("User", back_populates="approbations")
+
+
+TimeSheet.approbations = relationship(
+    "Approbation", back_populates="timesheet")
+
+User.approbations = relationship("Approbation", back_populates="supervisor")
 
 
 async def create_db_and_tables():

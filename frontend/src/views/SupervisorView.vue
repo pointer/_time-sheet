@@ -18,8 +18,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
 
+import { ref, computed, onMounted } from "vue";
+import { useTheme } from "vuetify";
+import { isWeekend, isHoliday } from "@/utils/utils"; // Assume you have a utility to check holidays
+import { useRouter } from "vue-router";
+const theme = useTheme();
+import { useApprobationStore } from "@/store";
+const router = useRouter();
+const approbationStore = useApprobationStore();
+import { useField, useForm, ErrorMessage } from "vee-validate";
+import { NavigationFailureType, isNavigationFailure } from "vue-router";
 const search = ref(''); //
 const selectedTimesheets = ref([]);
 const fetchedTimesheets = ref([]);
@@ -39,45 +48,20 @@ onMounted(async () => {
 });
 
 async function fetchTimesheets() {
-    return new Promise((resolve, reject) => {
-        const ws = new WebSocket("ws://localhost:8765");
-        const date = new Date(); // Get the current date
+    try {
+        const date = new Date();
         const month = date.toLocaleString('default', { month: 'long' });
-
-        ws.onopen = () => {
-            ws.send(JSON.stringify({ action: "fetch_timesheet", month }));
-        };
-
-        ws.onmessage = (event) => {
-            const response = JSON.parse(event.data);
-            if (response.success && Array.isArray(response.timesheets)) {
-                // Transform the data into the required format
-                fetchedTimesheets.value = response.timesheets.map(timesheet => ({
-                    timesheet_id: timesheet[0],
-                    user_id: timesheet[1],
-                    employee: timesheet[6] + ' ' + timesheet[7],
-                    date: timesheet[2],
-                    month: timesheet[3],
-                    project: timesheet[4],
-                    worked: timesheet[5]
-                }));
-            } else {
-                console.error("Unexpected response format:", response);
-            }
-            resolve(response);
-            ws.close();
-        };
-
-        ws.onerror = (error) => {
-            console.error("WebSocket error:", error);
-            alert("Failed to connect to the WebSocket server.");
-            reject(error);
-        };
-
-        ws.onclose = () => {
-            console.log("WebSocket connection closed.");
-        };
-    });
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+        const response = await approbationStore.getTimesheetsByMonth(month, token);
+        console.log('Timesheets response:', response);
+        fetchedTimesheets.value = response;
+    } catch (error) {
+        console.error('Error fetching timesheets:', error);
+        // Handle the error, e.g., redirect to login page or show an error message
+    }
 }
 
 async function approveSelectedTimesheets() {

@@ -41,7 +41,7 @@ const routes = [
     name: "Supervisor",
     component: SupervisorView,
     // beforeEnter: AppView.guardMyroute,
-    meta: { role: 1, title: "Approbation" },
+    // meta: { role: 1, title: "Approbation" },
   },
     {
     path: '/admin/agents',

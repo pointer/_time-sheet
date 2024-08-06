@@ -93,3 +93,28 @@ class TimeSheetRead(TimeSheetBase):
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
+
+
+class ApprobationBase(BaseModel):
+    timesheet_id: int
+    supervisor_id: int
+    approved: bool
+
+
+class ApprobationCreate(ApprobationBase):
+    pass
+
+
+class ApprobationUpdate(ApprobationBase):
+    pass
+
+
+class ApprobationRead(ApprobationBase):
+    id: int
+    approval_date: datetime
+
+    class Config:
+        from_attributes = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
