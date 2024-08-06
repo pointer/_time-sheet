@@ -4,6 +4,7 @@ import "./style.css";
 import App from "./App.vue";
 import router from "./router";
 import vuetify from "./plugins/vuetify";
+import i18n from './plugins/i18n'
 import dotenv from "dotenv";
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -22,6 +23,7 @@ const app = createApp(App);
 app.use(VueAxios, axios)
    .use(createPinia())
    .use(router)
+   .use(i18n)
    .use(vuetify);
 
 app.config.globalProperties.axios = axios;

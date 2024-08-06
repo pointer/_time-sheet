@@ -3,25 +3,23 @@
 //         ? 'http://localhost:8080/admin/api'
 //         : '/admin-app/admin/api';
 const SRV_API_URL = `${import.meta.env.VITE_SRV_API_URL}`
-const axiosAuth  = axios.create({
+const instance  = axios.create({
     baseURL: SRV_API_URL,
     headers: {
         Accept: 'application/json',
     },
 });
-// console.log(axiosAuth)
-axiosAuth .interceptors.request.use(
-    config => {
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-            config.headers.common = { Authorization: `Bearer ${accessToken}` };
-        }
-        return config;
-    },
-    error => {
-        Promise.reject(error.response || error.message);
-    }
-);
+
+instance.interceptors.request.use(function (config) {
+  const token = localStorage.getItem('token')?.replace(/"/g, '');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
+
 axiosAuth.interceptors.response.use(
     (response) => {
     // Any status code that lie within the range of 2xx cause this function to trigger
@@ -117,7 +115,7 @@ axiosAuth.interceptors.response.use(
     // }
 // );
 
-export default axiosAuth ;
+export default instance ;
 
 
 

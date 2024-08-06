@@ -53,10 +53,10 @@
             </v-col>
             <!-- <v-col cols="12" md="6"> -->
             <v-col class="mt-4">
-              <v-text-field clearable v-model="user.passconfirm"
-                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" required :type="visible ? 'text' : 'password'"
-                density="compact" placeholder="Confirm your password" :rules="[min6, matchingPasswords]" :counter="6"
-                prepend-inner-icon="mdi-lock-outline" variant="underlined">
+              <v-text-field clearable v-model="passConfirm" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                required :type="visible ? 'text' : 'password'" density="compact" placeholder="Confirm your password"
+                :rules="[min6, matchingPasswords]" :counter="6" prepend-inner-icon="mdi-lock-outline"
+                variant="underlined">
                 <template v-slot:append>
                   <v-icon v-if="successPass1" color="green">{{ passRule1 }}</v-icon>
                   <v-icon v-if="!successPass1" color="red">{{ passRule1 }}</v-icon>
@@ -84,6 +84,10 @@
                 variant="underlined"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
+              <v-text-field clearable v-model="user.companyId" color="primary" label="Company ID"
+                variant="underlined"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
               <v-text-field clearable v-model="user.taxNumber" color="primary" label="Tax number"
                 variant="underlined"></v-text-field>
             </v-col>
@@ -92,8 +96,8 @@
                 variant="underlined"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-combobox clearable chips multiple v-model="user.project" :items="projects" item-text="project_name"
-                item-value="project_id" label="Project" required></v-combobox>
+              <v-combobox clearable chips v-model="user.project" :items="projects" label="Project"
+                required></v-combobox>
             </v-col>
             <v-col cols="12" md="6">
               <v-combobox clearable chips :items="['Contract', 'Supervisor', 'Employee']" v-model="user.role" required
@@ -107,12 +111,12 @@
           <!-- <v-divider></v-divider> -->
           <v-row no-gutters>
             <v-col cols="12" md="6">
-              <v-date-input clearable v-model="user.dateStart" color="primary" label="Start Date" required
-                variant="underlined"></v-date-input>
+              <v-text-field clearable v-model="user.dateStart" type="date" color="primary" label="Start Date" required
+                variant="underlined"></v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-date-input clearable v-model="user.dateEnd" color="primary" label="End Date" required
-                variant="underlined"></v-date-input>
+              <v-text-field clearable v-model="user.dateEnd" type="date" color="primary" label="End Date" required
+                variant="underlined"></v-text-field>
             </v-col>
           </v-row>
           <small class="text-caption text-medium-emphasis">*indicates required field</small>
@@ -135,13 +139,17 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useField, useForm, ErrorMessage } from "vee-validate";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/store";
+const router = useRouter();
+import { NavigationFailureType, isNavigationFailure } from "vue-router";
 import * as Yup from "yup";
 const visible = ref(false);
 const schema = Yup.object().shape({
   username: Yup.string().required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
-import { useAuthStore } from "@/store";
+
 // const { handleSubmit, handleReset } = useForm({
 //   schema,
 // });
@@ -182,11 +190,12 @@ const user = ref({
   lastName: "",
   email: "",
   password: "",
-  passconfirm: "",
+  // passConfirm: "",
   phone: "",
   role: "",
   contractNumber: "",
   company: "",
+  companyId: "",
   taxNumber: "",
   client: "",
   project: "",
@@ -195,13 +204,11 @@ const user = ref({
   dateEnd: "",
   rate: "",
 });
-
-
 const password = ref(user.password)
-const passConfirm = ref(user.passconfirm)
+const passConfirm = ref('')
 const successPass = ref(false)
 const successPass1 = ref(false)
-const projects = ref([]);
+const projects = ref(['STLA', 'STLB', 'STLC', 'STLD', 'DCROSS', 'BMW']);
 
 const rules = ref([
   (value) => !!value || "Required.",
@@ -221,15 +228,29 @@ const updateUser = async () => {
 
 async function updateUserData(user_data) {
   try {
-    // const payload = {
-    //   email: username.value,
-    //   password: password.value
-    // };
     const authStore = useAuthStore();
-    const response = await authStore.userRegister(user_data);
+    const response = await authStore.userRegister({
+      email: user_data.email,
+      password: user_data.password,
+      first_name: user_data.firstName,
+      last_name: user_data.lastName,
+      phone: user_data.phone,
+      role: user_data.role,
+      contract_number: user_data.contractNumber,
+      company: user_data.company,
+      company_id: user_data.companyId,
+      tax_number: user_data.taxNumber,
+      client: user_data.client,
+      project: user_data.project,
+      city: user_data.city,
+      date_start: user_data.dateStart,
+      date_end: user_data.dateEnd,
+      rate: user_data.rate
+    });
     if (response.status === 200) {
       alert("Registration successful. Please log in.");
-      return 'Success'
+      dialog = false
+      router.push({ name: 'Login' });
     } else {
       alert("Registration failed: " + response.data.detail);
     }
@@ -278,7 +299,7 @@ const min6 = (value) => {
   }
 }
 const matchingPasswords = () => {
-  if (user.password === user.passConfirm) {
+  if (user.password === passConfirm) {
     return true;
   } else {
     return 'Passwords does not match.';
@@ -301,11 +322,11 @@ const passRule = () => {
   }
 }
 const passRule1 = () => {
-  if (user.passConfirm === '') {
+  if (passConfirm === '') {
     // field is empty
     successPass1 = false;
     return '';
-  } else if (min6(user.passConfirm) === true && matchingPasswords() === true) {
+  } else if (min6(passConfirm) === true && matchingPasswords() === true) {
     // password ok
     successPass1 = true;
     return 'mdi-check';

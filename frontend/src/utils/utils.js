@@ -1,7 +1,7 @@
-// import i18n from '@/plugins/i18n'
-// import * as types from "@/store/mutation-types";
+import i18n from '@/plugins/i18n'
+import * as types from "@/store/mutation-types";
 import { isPast, format, parseISO } from "date-fns";
-// import { store } from "@/store";
+import * as store from "@/store";
 import { es, zhCN } from "date-fns/locale";
 
 const localesDateFns = {
@@ -71,28 +71,26 @@ export const buildPayloadPagination = (pagination, search) => {
 };
 
 // Catches error connection or any other error (checks if error.response exists)
-import * as types from '@/store/mutation-types';
-
 export const handleError = (error, store, reject) => {
   let errMsg = "";
-  if (store.$state.showLoading !== undefined) {
-    store.$patch({ showLoading: false });
-  }
-  if (store.$state.error !== undefined) {
-    store.$patch({ error: null });
-  }
-  if (error.response && error.response.status === 401) {
-    store.userLogout();
-  } else {
-    errMsg = error.response
-      ? error.response.data.errors.msg
-      : "SERVER_TIMEOUT_CONNECTION_ERROR";
-    setTimeout(() => {
-      if (store.$state.error !== undefined) {
-        store.$patch({ error: errMsg || false });
-      }
-    }, 0);
-  }
+  // if (store.$state.showLoading !== undefined) {
+  //   store.$patch({ showLoading: false });
+  // }
+  // if (store.$state.error !== undefined) {
+  //   store.$patch({ error: null });
+  // }
+  // if (error.response && error.response.status === 401) {
+  //   store.userLogout();
+  // } else {
+  //   errMsg = error.response
+  //     ? error.response.data.errors.msg
+  //     : "SERVER_TIMEOUT_CONNECTION_ERROR";
+  //   setTimeout(() => {
+  //     if (store.$state.error !== undefined) {
+  //       store.$patch({ error: errMsg || false });
+  //     }
+  //   }, 0);
+  // }
   reject(error);
 };
 

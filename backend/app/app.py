@@ -1,5 +1,10 @@
+from datetime import datetime, timedelta
+from workalendar.europe import France
+import calendar
+from calendar import monthrange
+from typing import Union, Optional, Any
 from contextlib import asynccontextmanager
-
+from datetime import datetime, date
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi_users.exceptions import UserAlreadyExists
 from fastapi.security import OAuth2PasswordRequestForm
@@ -16,7 +21,7 @@ from app.schemas import UserCreate, UserRead, UserUpdate
 from app.users import auth_backend, current_active_user, fastapi_users
 import logging
 from app.users import UserManager, get_user_manager
-
+from app.timesheets import router as timesheet_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -47,10 +52,27 @@ class LoginResponse(BaseModel):
     id: int
     is_active: bool
     role: bool
+    working_days: int
 
 
 class RegisterResponse(BaseModel):
     pass
+
+
+def calculate_working_days():
+    today = datetime.now()
+    first_day = today.replace(day=1)
+    last_day = (today.replace(day=1) + timedelta(days=32)
+                ).replace(day=1) - timedelta(days=1)
+
+    working_days = 0
+    current_day = first_day
+    while current_day <= last_day:
+        if current_day.weekday() < 5:  # Monday to Friday
+            working_days += 1
+        current_day += timedelta(days=1)
+
+    return working_days
 
 
 @app.middleware("http")
@@ -74,6 +96,11 @@ async def register(
     user_manager: UserManager = Depends(get_user_manager),
 ):
     try:
+        # Convert datetime to date for SQLite
+        if user.date_start:
+            user.date_start = user.date_start.date()
+        if user.date_end:
+            user.date_end = user.date_end.date()
         created_user = await user_manager.create(user)
         logger.info(f"User {created_user.id} has registered.")
         return UserRead(
@@ -82,19 +109,19 @@ async def register(
             is_active=created_user.is_active,
             is_superuser=created_user.is_superuser,
             is_verified=created_user.is_verified,
-            password=created_user.password,
-            passconfirm=created_user.passconfirm,
+            first_name=created_user.first_name,
+            last_name=created_user.last_name,
             phone=created_user.phone,
             role=created_user.role,
-            contractNumber=created_user.contractNumber,
+            contract_number=created_user.contract_number,
             company=created_user.company,
-            taxNumber=created_user.taxNumber,
+            company_id=created_user.company_id,
+            tax_number=created_user.tax_number,
             client=created_user.client,
             project=created_user.project,
             city=created_user.city,
-            zip=created_user.zip,
-            dateStart=created_user.dateStart,
-            dateEnd=created_user.dateEnd,
+            date_start=created_user.date_start,
+            date_end=created_user.date_end,
             rate=created_user.rate,
         )
     except UserAlreadyExists:
@@ -134,14 +161,19 @@ async def login(
         )
 
     access_token = await auth_backend.get_strategy().write_token(user)
-    return LoginResponse(
+    working_days = calculate_working_days()
+    # print(">>>>>>>>>>>>> Working_days: ", working_days)
+    respnse = LoginResponse(
         access_token=access_token,
         token_type="bearer",
         user=user.email,
         id=user.id,
         is_active=user.is_active,
-        role=user.is_superuser
+        role=user.is_superuser,
+        working_days=working_days
     )
+    # print(">>>>>>>>>>>>>Login Response: ", respnse)
+    return respnse
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -166,6 +198,13 @@ app.include_router(
     fastapi_users.get_users_router(UserRead, UserUpdate),
     prefix="/users",
     tags=["users"],
+)
+# app.include_router(timesheet_router, prefix="/api", tags=["timesheets"])
+app.include_router(
+    timesheet_router,
+    prefix="/api",
+    tags=["timesheets"],
+    dependencies=[Depends(fastapi_users.current_user())]
 )
 
 

@@ -6,8 +6,8 @@
     <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
       <div class="text-subtitle-1 text-medium-emphasis">Account</div>
 
-      <v-text-field density="compact" placeholder="Email address" prepend-inner-icon="mdi-email-outline"
-        variant="outlined"></v-text-field>
+      <v-text-field v-model="username" density="compact" placeholder="Email address"
+        prepend-inner-icon="mdi-email-outline" variant="outlined"></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
         Password
@@ -16,8 +16,9 @@
           Forgot login password?</a>
       </div>
 
-      <v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
-        density="compact" placeholder="Enter your password" prepend-inner-icon="mdi-lock-outline" variant="outlined"
+      <v-text-field v-model="password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="visible ? 'text' : 'password'" density="compact" placeholder="Enter your password"
+        prepend-inner-icon="mdi-lock-outline" variant="outlined"
         @click:append-inner="visible = !visible"></v-text-field>
 
       <v-card class="mb-12" color="surface-variant" variant="tonal">
@@ -53,6 +54,23 @@ import { useField, useForm, ErrorMessage } from "vee-validate";
 // import * as adminUser from "@/AdminUsers"
 import { useAuthStore } from "@/store";
 const visible = ref(false);
+const form = ref(false);
+const loading = ref(false);
+const username = ref("");
+const email = ref("");
+const password = ref("");
+const router = useRouter();
+const passwordRules = [
+  (value) => !!value || "Required.",
+  (value) => (value && value.length >= 8) || "Min 8 characters",
+];
+
+const emailRules = [
+  (v) =>
+    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
+    "E-mail must be valid",
+];
+
 // const schema = Yup.object().shape({
 //   username: Yup.string().required("Email is required"),
 //   password: Yup.string().required("Password is required"),
@@ -64,10 +82,6 @@ const visible = ref(false);
 
 async function onSignIn() {
   const authStore = useAuthStore();
-  // const { username, password } = values;
-  // const username = useField("username", schema);
-  // const password = useField("password", schema);
-  // username.value, password.va
   const payload = new URLSearchParams();
   payload.append('username', username.value);  // or 'email', depending on what your backend expects
   payload.append('password', password.value);
@@ -78,24 +92,9 @@ async function onSignIn() {
 async function onSignUp() {
   const authStore = useAuthStore();
   try {
-    // const payload = {
-    //   email: username.value,
-    //   password: password.value
-    // };
-    // const response = await authStore.userRegister(payload);
     router.push({ name: 'UserData' });
-    // if (response.status === 200) {
-    //   alert("Registration successful. Please log in.");
-    // } else {
-    //   alert("Registration failed: " + response.data.detail);
-    // }
   } catch (error) {
     console.error('Registration error:', error);
-    // if (error.response && error.response.data) {
-    //   alert("Registration failed: " + error.response.data.detail);
-    // } else {
-    //   alert("Registration failed: An unexpected error occurred");
-    // }
   }
 }
 
@@ -128,23 +127,6 @@ async function onSignUp() {
 // const onSubmit = handleSubmit(async (values) => {
 //   alert(JSON.stringify(values, null, 2));
 // });
-
-const form = ref(false);
-const loading = ref(false);
-const username = ref("");
-const email = ref("");
-const password = ref("");
-const router = useRouter();
-const passwordRules = [
-  (value) => !!value || "Required.",
-  (value) => (value && value.length >= 8) || "Min 8 characters",
-];
-
-const emailRules = [
-  (v) =>
-    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-    "E-mail must be valid",
-];
 
 async function login() {
   loading.value = true;

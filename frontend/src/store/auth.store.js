@@ -37,6 +37,7 @@ export const useAuthStore = defineStore({
     user: JSON.parse(localStorage.getItem("user")),
     token: JSON.parse(localStorage.getItem('token')) || null,
     isTokenSet: !!localStorage.getItem('token'),
+    working_days: JSON.parse(localStorage.getItem('working_days')),
     returnUrl: null,
   }),
 
@@ -55,8 +56,11 @@ export const useAuthStore = defineStore({
           .then((response) => {
             if (response.status === 200) {
               localStorage.setItem('user', JSON.stringify(response.data.user));
+              localStorage.setItem('user_id', JSON.stringify(response.data.id));              
               localStorage.setItem('token', JSON.stringify(response.data.access_token));
+              localStorage.setItem('token_type', JSON.stringify(response.data.token_type));
               localStorage.setItem('role', JSON.stringify(response.data.is_superuser));
+              localStorage.setItem('working_days', JSON.stringify(response.data.working_days));
               localStorage.setItem(
                 'tokenExpiration',
                 JSON.stringify(
@@ -69,6 +73,10 @@ export const useAuthStore = defineStore({
               this.user = response.data.user;
               this.token = response.data.token;
               this.isTokenSet = true;
+              this.working_days = response.data.working_days;
+              this.user_id = response.data.id;
+              this.token_type = response.data.token_type;
+              this.role = response.data.is_superuser;
               buildSuccess(
                 null,
                 this,
@@ -79,7 +87,6 @@ export const useAuthStore = defineStore({
                     // Optionally, you can redirect to a default route or show an error message
                   })
               );
-              console.log('Login successful');
             }
             else {
               const errorData = response.json();
@@ -123,15 +130,19 @@ export const useAuthStore = defineStore({
     },
     autoLogin({ commit }) {
       const user = JSON.parse(localStorage.getItem('user'))
-      commit(types.SAVE_USER, user)
-      commit(types.SAVE_TOKEN, JSON.parse(localStorage.getItem('token')))
-      commit(types.SET_LOCALE, JSON.parse(localStorage.getItem('locale')))
-      commit(types.EMAIL_VERIFIED, user.verified)
+      const user_id = JSON.parse(localStorage.getItem('user_id'))
+      const token_type = JSON.parse(localStorage.getItem('token_type'))
+      const role = JSON.parse(localStorage.getItem('role'))
+      const working_days = JSON.parse(localStorage.getItem('working_days'))
     },
     userLogout({ commit }) {
-      window.localStorage.removeItem('token')
-      window.localStorage.removeItem('tokenExpiration')
-      window.localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      localStorage.removeItem('tokenExpiration')
+      localStorage.removeItem('user')
+      localStorage.removeItem('user_id')
+      localStorage.removeItem('token_type')
+      localStorage.removeItem('role')
+      localStorage.removeItem('working_days')
       // commit(types.LOGOUT)
       router.push({
         name: 'login'
@@ -164,6 +175,8 @@ export const useAuthStore = defineStore({
       state.user = null;
       state.token = null;
       state.isTokenSet = false;
+      state.working_days = null;
+      localStorage.removeItem('working_days');
     },
     [types.SAVE_USER](state, user) {
       state.user = user;

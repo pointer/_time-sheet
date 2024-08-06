@@ -87,7 +87,6 @@ router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ["/account/login",  "/account/register", "/user-data"];
   const authRequired = !publicPages.includes(to.path);
-  console.log(authRequired)
   const authStore = useAuthStore();
 
   if (authRequired && !authStore.user) {

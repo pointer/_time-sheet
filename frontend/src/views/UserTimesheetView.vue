@@ -5,14 +5,14 @@
       <v-spacer></v-spacer>
       <LogoutButton />
     </v-app-bar>
-    <h1 class="text-h4 mb-5">Time Sheet</h1>
+    <!-- <h1 class="text-h4 mb-5">Time Sheet</h1> -->
 
     <v-container>
       <v-row>
         <!-- Date Picker -->
         <v-col cols="12" md="4">
           <v-date-picker show-adjacent-months multiple :dark="theme.global.current.value.dark" color="primary"
-            v-model="newEntry.dates" scrollable :allowed-dates="allowedDates"></v-date-picker>
+            v-model="newEntry.dates" scrollable></v-date-picker>
         </v-col>
 
         <!-- Time Entries Table -->
@@ -49,15 +49,18 @@ import { useTheme } from "vuetify";
 import { isWeekend, isHoliday } from "@/utils/utils"; // Assume you have a utility to check holidays
 // import LogoutButton from "@/components/LogoutButton.vue";
 import LogoutButton from '@/components/Logout.vue';
+import { useTimesheetStore } from "@/store";
+const router = useRouter();
+import { useField, useForm, ErrorMessage } from "vee-validate";
+import { useRouter } from "vue-router";
 const theme = useTheme();
+import { NavigationFailureType, isNavigationFailure } from "vue-router";
+
 const newEntry = ref({
   dates: [],
 });
 
-// const timeEntries = ref([
-//   { date: "2023-10-01", project: "Project A", worked: 20 },
-//   { date: "2023-10-02", project: "Project B", worked: 22 },
-// ]);
+let working_days = 0
 
 const timeEntries = ref([]);
 
@@ -65,7 +68,7 @@ const projects = ref([]);
 
 const headers = [
   { title: "Dates", key: "date" },
-  { title: "Worked Days", key: "worked" },
+  { title: "Worked Days", key: "worked_days" },
   { title: "Biz days", key: "working_days", sortable: false },
   { title: "Actions", key: "actions", sortable: false },
 
@@ -92,16 +95,16 @@ function formatDateForDisplay(date) {
 
 function addTimeEntry() {
   if (formIsValid.value) {
-    let count = 0;
+    let worked_days = 0;
     let dateFormatted = new Date().toLocaleDateString();
 
     newEntry.value.dates.forEach((date) => {
-      count++;
+      worked_days++;
     });
 
     timeEntries.value.push({
       date: dateFormatted,
-      worked: count,
+      worked_days: worked_days,
       working_days: working_days
     });
 
@@ -127,23 +130,37 @@ function allowedDates(date) {
 
 
 async function saveTimesheet() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (!user) {
+  const user_id = JSON.parse(localStorage.getItem('user_id'));
+  if (!user_id || user_id === '') {
     alert("User not logged in");
     return;
   }
   const date = new Date(); // Get the current date
   const month = date.toLocaleString('default', { month: 'long' }); //
-  for (const entry of timeEntries.value) {
-    const response = await submitTimesheet(user.user_id, entry.date, entry.worked, month);
-    if (!response.success) {
-      alert("Failed to save timesheet");
-      return;
+
+  try {
+    const timesheetStore = useTimesheetStore();
+    const response = await timesheetStore.saveTimesheet({
+      user_id: user_id,
+      date: new Date().toISOString().split('T')[0],
+      worked_days: timeEntries.value[0].worked_days,
+      working_days: timeEntries.value[0].working_days,
+      month: month,
+      created_at: new Date().toISOString().split('T')[0],
+      updated_at: new Date().toISOString().split('T')[0],
+    })
+
+    alert("Timesheet saved successfully");
+    timeEntries.value = [];
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    if (error.response && error.response.data) {
+      alert("Registration failed: " + error.response.data.detail);
+    } else {
+      alert("Registration failed: An unexpected error occurred");
     }
   }
-
-  alert("Timesheet saved successfully");
-  timeEntries.value = [];
 }
 
 async function submitTimesheet(user_id, date, worked, month) {
@@ -197,5 +214,6 @@ async function fetchProjects() {
 
 onMounted(async () => {
   // await fetchProjects();
+  working_days = JSON.parse(localStorage.getItem('working_days'));
 });
 </script>

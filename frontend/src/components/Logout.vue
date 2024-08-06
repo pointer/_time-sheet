@@ -13,9 +13,11 @@ export default {
             localStorage.removeItem('token')
             localStorage.removeItem('tokenExpiration')
             localStorage.removeItem('user')
+            localStorage.removeItem('role')
+            localStorage.removeItem('working_days')
             // commit(types.LOGOUT)
             router.push({
-                name: 'login'
+                name: 'Login'
             })
         }
     }
