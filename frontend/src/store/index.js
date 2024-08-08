@@ -1,6 +1,6 @@
 export * from "./alert.store";
 export * from "./auth.store";
-export * from "./user-time-sheet";
+export * from "./timesheet.store";
 export * from "./users.store";
 export * from "./approbation.store";
 // export * from '@/store/modules'

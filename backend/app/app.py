@@ -124,6 +124,7 @@ async def register(
             date_start=created_user.date_start,
             date_end=created_user.date_end,
             rate=created_user.rate,
+            approver=created_user.approver
         )
     except UserAlreadyExists:
         logger.error(f"Registration failed: User with email {

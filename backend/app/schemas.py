@@ -25,6 +25,7 @@ class UserRead(schemas.BaseUser[int]):
     date_start: date | None = None
     date_end: date | None = None
     rate: Decimal | None = None
+    approver: Decimal | None = None
 
 
 class UserCreate(schemas.BaseUserCreate):
@@ -42,6 +43,7 @@ class UserCreate(schemas.BaseUserCreate):
     date_start: datetime | None = None
     date_end: datetime | None = None
     rate: float | None = None
+    approver: Decimal | None = None
 
     class Config:
         json_encoders = {
@@ -65,6 +67,7 @@ class UserUpdate(schemas.BaseUserUpdate):
     date_start: date | None = None
     date_end: date | None = None
     rate: Decimal | None = None
+    approver: Decimal | None = None
 
 
 class TimeSheetBase(BaseModel):
@@ -87,6 +90,8 @@ class TimeSheetRead(TimeSheetBase):
     user_id: int
     created_at: datetime
     updated_at: datetime
+    first_name: str | None = None
+    last_name: str | None = None
 
     class Config:
         from_attributes = True

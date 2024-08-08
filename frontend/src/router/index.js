@@ -4,10 +4,11 @@ import accountRoutes from "./account.routes";
 import usersRoutes from "./users.routes";
 import HomeView from "../components/HomePage.vue";
 import LoginView from "../views/account/LoginView.vue";
+import Logout from "../components/Logout.vue";
 import UserDataView from "../views/UserDataView.vue";
 import UserTimesheetView from "../views/UserTimesheetView.vue";
-import AdminUserView from "../views/AdminUsers.vue";
-import AdminAgents from "../views/AdminAgents.vue";
+// import AdminUserView from "../views/AdminUsers.vue";
+// import AdminAgents from "../views/AdminAgents.vue";
 
 import SupervisorView from "../views/SupervisorView.vue";
 import AppView from "../App.vue";
@@ -24,6 +25,11 @@ const routes = [
     component: LoginView,
   },
   {
+    path: "/logout",
+    name: "Logout",
+    component: Logout,
+  },
+  {
     path: "/user-data",
     name: "UserData",
     component: UserDataView,
@@ -37,17 +43,17 @@ const routes = [
     meta: { role: "Employee", title: "Time Sheet" },
   },
   {
-    path: "/supervisor",
-    name: "Supervisor",
+    path: "/approbation",
+    name: "Approbation",
     component: SupervisorView,
     // beforeEnter: AppView.guardMyroute,
     // meta: { role: 1, title: "Approbation" },
   },
-    {
-    path: '/admin/agents',
-    name: 'AdminAgents',
-    component: AdminAgents
-  },
+  //   {
+  //   path: '/admin/agents',
+  //   name: 'AdminAgents',
+  //   component: AdminAgents
+  // },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",

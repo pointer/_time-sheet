@@ -15,7 +15,7 @@ export const useApprobationStore = defineStore({
     actions: {
         getApprobations({ month, token }) {
             return new Promise((resolve, reject) => {
-                timesheet_api.getTimesheets(month, token)
+                api.getApprobationsByMonth(month, token)
                     .then((response) => {
                         if (response.status === 200) {
                             console.log(response.data);
@@ -33,15 +33,18 @@ export const useApprobationStore = defineStore({
         editApprobation(id, payload) {
             return api.editApprobation(id, payload);
         },
-        saveApprobation(payload) {
-            return api.saveApprobation(payload);
+        saveApprobation(token, payload) {
+            return api.saveApprobation(token,payload);
+        },
+        saveApprobations(payload) {
+            return api.saveApprobations(payload);
         },
         deleteApprobation(id) {
             return api.deleteApprobation(id);
         },
-        getTimesheetsByMonth(month, token) {
+        getTimesheetsByMonth(month, approver, token) {
             return new Promise((resolve, reject) => {
-                api.getTimesheetsByMonth(month, token)
+                api.getTimesheetsByMonth(month, approver, token)
                     .then((response) => {
                         if (response.status === 200) {
                             resolve(response.data);

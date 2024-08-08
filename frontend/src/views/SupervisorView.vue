@@ -1,14 +1,29 @@
 <template>
     <v-card title="Approbation" flat>
         <!-- <v-container>            -->
-        <template v-slot:text>
+        <!-- <template v-slot:text>
             <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
                 hide-details single-line></v-text-field>
-        </template>
-        <v-data-table v-model="selectedTimesheets" :headers="headers" :items="fetchedTimesheets" :search="search"
-            item-value="employee" show-select>
-            <template v-slot:item.exclusive="{ item }">
+        </template> -->
+        <v-data-table v-model="selectedTimesheets" :headers="headers" :items="fetchedTimesheets" item-value="employee"
+            item-selectable="selectable" return-object show-select hover>
+            <template v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }">
+                <v-checkbox-btn :indeterminate="someSelected && !allSelected" :model-value="allSelected" color="primary"
+                    @update:model-value="selectAll(!allSelected)"></v-checkbox-btn>
+            </template>
+
+            <template v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }">
+                <v-checkbox-btn :model-value="isSelected(internalItem)" color="primary"
+                    @update:model-value="toggleSelect(internalItem)"></v-checkbox-btn>
+            </template>
+            <!-- <template v-slot:item.exclusive="{ item }">
                 <v-checkbox v-model="item.exclusive" readonly></v-checkbox>
+            </template> -->
+            <template v-slot:item.worked="{ item }">
+                <div class="text-end">
+                    <v-chip :color="item.worked == item.working_days ? 'green' : 'red'" :text="item.worked"
+                        label></v-chip>
+                </div>
             </template>
         </v-data-table>
         <v-btn color="primary" @click="approveSelectedTimesheets">Approve Selected</v-btn>
@@ -21,6 +36,8 @@
 
 import { ref, computed, onMounted } from "vue";
 import { useTheme } from "vuetify";
+import { useAuthStore } from "@/store";
+const authStore = useAuthStore();
 import { isWeekend, isHoliday } from "@/utils/utils"; // Assume you have a utility to check holidays
 import { useRouter } from "vue-router";
 const theme = useTheme();
@@ -35,11 +52,12 @@ const fetchedTimesheets = ref([]);
 const approvedTimesheets = ref([]);
 const headers = [
     { title: 'Employee', key: 'employee' },
-    { title: 'Timesheet ID', key: 'timesheet_id' },
+    { title: 'TimesheetID', key: 'timesheet_id' },
     { title: 'Date', key: 'date' },
     { title: 'Month', key: 'month' },
     { title: 'Project', key: 'project' },
     { title: 'Worked Days', key: 'worked' },
+    { title: 'Working Days', key: 'working_days' },
     { title: 'Actions', key: 'actions', sortable: false },
 ];
 
@@ -49,15 +67,31 @@ onMounted(async () => {
 
 async function fetchTimesheets() {
     try {
+        fetchedTimesheets.value = [];
+        const user_id = localStorage.getItem('user_id');
+        if (!user_id || user_id === '') {
+            alert("User not logged in");
+            return;
+        }
         const date = new Date();
         const month = date.toLocaleString('default', { month: 'long' });
         const token = localStorage.getItem('token');
         if (!token) {
             throw new Error('No authentication token found');
         }
-        const response = await approbationStore.getTimesheetsByMonth(month, token);
-        console.log('Timesheets response:', response);
-        fetchedTimesheets.value = response;
+        const response = await approbationStore.getTimesheetsByMonth(month, user_id, token);
+        for (const timesheet of response) {
+            fetchedTimesheets.value.push({
+                employee: timesheet.first_name + ' ' + timesheet.last_name,
+                timesheet_id: timesheet.id,
+                date: timesheet.date,
+                month: timesheet.month,
+                project: timesheet.project,
+                worked: `${timesheet.worked_days}`,
+                working_days: timesheet.working_days,
+            })
+        }
+        // console.log('Timesheets response:', fetchedTimesheets.value);
     } catch (error) {
         console.error('Error fetching timesheets:', error);
         // Handle the error, e.g., redirect to login page or show an error message
@@ -65,31 +99,46 @@ async function fetchTimesheets() {
 }
 
 async function approveSelectedTimesheets() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-        alert("User not logged in");
-        return;
-    }
-
-    // console.log(fetchedTimesheets);
-    for (const selectedTimesheet of selectedTimesheets.value) {
-        const result = fetchedTimesheets.value.find(({ employee }) => employee === selectedTimesheet);
-        approvedTimesheets.value.push(result)
-    }
-    // console.log(approvedTimesheets)
-    const super_id = user.user_id
-    for (const timesheet of approvedTimesheets.value) {
-        // console.log(timesheet);
-        const response = await approveTimesheet(timesheet.timesheet_id, super_id, true, new Date().toISOString().substring(0, 10));
-        if (!response.success) {
-            alert("Failed to approve timesheet");
+    try {
+        const user_id = localStorage.getItem('user_id');
+        if (!user_id || user_id === '') {
+            alert("User not logged in");
             return;
+        }
+        const date = new Date().toISOString(); // Get the current date as ISO string
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+        // selectedTimesheets.value = selectedTimesheets.value.filter(timesheet => timesheet.worked == timesheet.working_days);
+        // console.log('Selected timesheets:', selectedTimesheets.value);
+        for (const timesheet of selectedTimesheets.value) {
+            // console.log('Selected timesheets:', timesheet.value);
+            const response = await approbationStore.saveApprobation(token, {
+                // approval_id: parseInt(timesheet.timesheet_id),
+                supervisor_id: parseInt(user_id),
+                approval_date: date,
+                timesheet_id: parseInt(timesheet.timesheet_id),
+                approved: true
+            });
+            // console.log('Approbation response:', response);
+        }
+        alert("Timesheets approved successfully");
+        // await fetchTimesheets(); // Refresh the timesheets list
+
+        selectedTimesheets.value = [];
+        authStore.userLogout();
+        // router.push('/');
+
+    } catch (error) {
+        console.error('Approval error:', error);
+        if (error.response && error.response.data) {
+            alert("Approval failed: " + error.response.data.detail);
+        } else {
+            alert("Approval failed: An unexpected error occurred");
         }
     }
 
-    alert("Timesheets approved successfully");
-    selectedTimesheets.value = [];
-    approvedTimesheets.value = [];
 }
 
 async function approveTimesheet(timesheet_id, supervisor_id, approved, approval_date) {

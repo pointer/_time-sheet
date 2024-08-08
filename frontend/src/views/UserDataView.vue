@@ -107,6 +107,12 @@
               <v-text-field clearable v-model="user.rate" color="primary" label="Rate" suffix="Eur."
                 variant="underlined"></v-text-field>
             </v-col>
+            <v-col cols="12" md="6">
+              <v-checkbox v-model="user.is_superuser" label="Supervisor"></v-checkbox>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-checkbox v-model="user.is_active" label="Active"></v-checkbox>
+            </v-col>
           </v-row>
           <!-- <v-divider></v-divider> -->
           <v-row no-gutters>
@@ -127,7 +133,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn text="Close" variant="plain" @click="dialog = false"></v-btn>
+          <v-btn text="Close" variant="plain" @click="closeDialog"></v-btn>
 
           <v-btn color="primary" type="submit" text="Save" variant="tonal" @click="updateUser"></v-btn>
         </v-card-actions>
@@ -202,7 +208,9 @@ const user = ref({
   city: "",
   dateStart: "",
   dateEnd: "",
-  rate: "",
+  rate: 0,
+  is_superuser: false,
+  is_active: true
 });
 const password = ref(user.password)
 const passConfirm = ref('')
@@ -219,11 +227,17 @@ const updateUser = async () => {
   const userData = { ...user.value };
   const response = await updateUserData(userData);
   if (response === 'Success') {
-    dialog = false
+    dialog.value = false
+    router.push({ name: 'Home' });
     alert("User data updated successfully");
   } else {
     alert("Failed to update user data");
   }
+};
+
+function closeDialog() {
+  dialog.value = false
+  router.push({ name: 'Home' });
 };
 
 async function updateUserData(user_data) {
@@ -245,7 +259,9 @@ async function updateUserData(user_data) {
       city: user_data.city,
       date_start: user_data.dateStart,
       date_end: user_data.dateEnd,
-      rate: user_data.rate
+      rate: user_data.rate,
+      is_superuser: user_data.is_supervisor,
+      is_active: user_data.is_active
     });
     if (response.status === 200) {
       alert("Registration successful. Please log in.");

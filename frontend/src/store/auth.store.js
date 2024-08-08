@@ -78,7 +78,7 @@ export const useAuthStore = defineStore({
               this.token_type = response.data.token_type;
               this.role = response.data.role;
               if (response.data.role === true) {
-                router.push({ name: 'Supervisor' })
+                router.push({ name: 'Approbation' })
               } else {
                 router.push({ name: 'TimeSheet' })
               }
@@ -135,7 +135,7 @@ export const useAuthStore = defineStore({
       const role = JSON.parse(localStorage.getItem('role'))
       const working_days = JSON.parse(localStorage.getItem('working_days'))
     },
-    userLogout({ commit }) {
+    userLogout() {
       localStorage.removeItem('token')
       localStorage.removeItem('tokenExpiration')
       localStorage.removeItem('user')
@@ -145,7 +145,7 @@ export const useAuthStore = defineStore({
       localStorage.removeItem('working_days')
       // commit(types.LOGOUT)
       router.push({
-        name: 'login'
+        name: 'Home'
       })
     },
     userRegister(payload) {

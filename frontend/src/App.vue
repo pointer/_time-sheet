@@ -41,7 +41,7 @@ const items = ref([
   { title: "Home", value: "home", route: "/" },
   { title: "User Registrar", value: "user-data", route: "/user-data" },
   { title: "Time Sheet", value: "bar", route: "/time-sheet" },
-  { title: "Validation", value: "supervisor", route: "/supervisor" },
+  { title: "Validation", value: "approbation", route: "/approbation" },
   { title: "Admin", value: "buzz", route: "/admin" },
 ]);
 // const permanent = computed(() => {
@@ -97,7 +97,7 @@ onMounted(() => {
   const role = JSON.parse(localStorage.getItem("role"));
   if (role) {
     if (role === "true") {
-      router.push("/supervisor");
+      router.push("/approbation");
     } else if (role === "false") {
       router.push("/employee");
     } else {

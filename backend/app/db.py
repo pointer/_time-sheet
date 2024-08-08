@@ -7,7 +7,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Column, Integer, String, Boolean, Date, Numeric, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
-DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+DATABASE_URL = "sqlite+aiosqlite:///./effort-tracking.db"
 
 
 class Base(DeclarativeBase):
@@ -41,6 +41,7 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     date_start = Column(Date, nullable=True)
     date_end = Column(Date, nullable=True)
     rate = Column(Numeric, nullable=True)
+    approver = Column(Integer,  nullable=True)
 
 
 class TimeSheet(Base):
@@ -70,6 +71,8 @@ class Approbation(Base):
     __tablename__ = "approbation"
 
     id = Column(Integer, primary_key=True, index=True)
+    # timesheet_id = Column(Integer)
+    # supervisor_id = Column(Integer)
     timesheet_id = Column(Integer, ForeignKey("timesheet.id"))
     supervisor_id = Column(Integer, ForeignKey("user_account.id"))
     approved = Column(Boolean, nullable=False)

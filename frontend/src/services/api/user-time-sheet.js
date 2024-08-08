@@ -3,18 +3,18 @@ import axios from 'axios'
 const baseUrl = import.meta.env.VITE_SRV_API_URL;
 
 export default {
-getTimesheetsByMonth(month, token) {
-    return axios.get(`${baseUrl}/api/timesheets/${month}`, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token.replace(/"/g, '')}`
-        }
-    }).catch(error => {
-        console.error('Error in Get Timesheets:', error.response ? error.response.data : error);
-        throw error;
-    });
-},  
-  getTimesheets(month, token){
+  getTimesheets(month, token) {
+      return axios.get(`${baseUrl}/api/approbations/${month}`, {
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token.replace(/"/g, '')}`
+          }
+      }).catch(error => {
+          console.error('Error in Get Timesheets:', error.response ? error.response.data : error);
+          throw error;
+      });
+  },  
+  getTimesheets(token){
     return axios.get(`${baseUrl}/api/timesheets`, {
       params: { month },
       headers: {

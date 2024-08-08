@@ -1,25 +1,22 @@
 <template>
-    <v-btn @click="handleLogout" color="error" dark>
+    <v-btn @click="Logout" color="error" dark>
         Logout
     </v-btn>
 </template>
 
-<script>
-// import { userLogout } from '@/services/api/auth';
-import router from '@/router'
-export default {
-    methods: {
-        handleLogout() {
-            localStorage.removeItem('token')
-            localStorage.removeItem('tokenExpiration')
-            localStorage.removeItem('user')
-            localStorage.removeItem('role')
-            localStorage.removeItem('working_days')
-            // commit(types.LOGOUT)
-            router.push({
-                name: 'Login'
-            })
-        }
-    }
-};
+<script setup>
+import { useRouter } from "vue-router";
+const router = useRouter();
+function Logout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('tokenExpiration')
+    localStorage.removeItem('user')
+    localStorage.removeItem('user_id')
+    localStorage.removeItem('role')
+    localStorage.removeItem('token_type')
+    localStorage.removeItem('working_days')
+    router.push({
+        name: 'Home'
+    })
+}
 </script>
